@@ -5,4 +5,22 @@ from .models import User
 # Register your models here.
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    pass
+    list_display = (
+        "username",
+        "employee_id",
+        "role",
+        "is_staff",
+        "is_active",
+    )
+
+    search_fields = (
+        "username",
+        "employee_id",
+    )
+
+    ordering = (
+        "employee_id",
+    )
+
+    def has_add_permission(self, request):
+        return False
