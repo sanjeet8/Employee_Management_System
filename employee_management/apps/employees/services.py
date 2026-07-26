@@ -44,12 +44,17 @@ class EmployeeService:
     
     
     @staticmethod
-    def get_visible_employees(user, search=""):
+    def get_visible_employees(user, search="", department=""):
         queryset = (Employee.objects.select_related(
             "user", "department", "manager"
         ))
 
         # Role-based authorization will come here later.
+        if department:
+            queryset = queryset.filter(
+                department__name=department
+            )
+            
         if search:
             queryset = queryset.filter(
                 Q(user__username__icontains=search) |
