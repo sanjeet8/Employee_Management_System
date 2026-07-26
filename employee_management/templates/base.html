@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        {% block title %}
+        EMS
+        {% endblock %}
+    </title>
+</head>
+
+<body>
+
+<h1>Employee Management System</h1>
+
+<hr>
+
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+{% block content %}
+{% endblock %}
+
+</body>
+
+</html>

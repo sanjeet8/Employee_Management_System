@@ -1,8 +1,8 @@
 from django.db import transaction
 from apps.accounts.models import User
 from apps.accounts.constants import UserRole
-from apps.departments.models import Department
 from .models import Employee
+from django.db.models import Q
 
 class EmployeeService:
 
@@ -41,3 +41,19 @@ class EmployeeService:
         )
 
         return employee
+    
+    
+    @staticmethod
+    def get_visible_employees(user, search=""):
+        queryset = (Employee.objects.select_related(
+            "user", "department", "manager"
+        ))
+
+        # Role-based authorization will come here later.
+        if search:
+            queryset = queryset.filter(
+                Q(user__username__icontains=search) |
+                Q(user__employee_id__icontains=search)
+            )
+
+        return queryset
