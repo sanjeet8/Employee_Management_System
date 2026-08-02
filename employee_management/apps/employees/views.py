@@ -5,8 +5,10 @@ from django.urls import reverse_lazy
 from .models import Employee
 from .services import EmployeeService
 from apps.departments.models import Department
+from apps.accounts.constants import UserRole
 from .forms import EmployeeAdminForm
 from apps.accounts.mixins import HRRequiredMixin
+from django.views.generic import DetailView
 
 # Create your views here.
 class EmployeeListView(LoginRequiredMixin, ListView):
@@ -45,3 +47,35 @@ class EmployeeCreateView(LoginRequiredMixin, HRRequiredMixin, FormView):
             **form.cleaned_data
         )
         return super().form_valid(form)
+    
+class EmployeeDetailView(LoginRequiredMixin, DetailView):
+    model = Employee
+    template_name = "employees/detail.html"
+    context_object_name = "employee"
+
+    def get_queryset(self):
+        return EmployeeService.get_visible_employees(
+            user=self.request.user
+        )
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        employee = self.object
+        
+        is_hr = (
+            user.is_superuser or
+            user.groups.filter(name=UserRole.HR).exists()
+        )
+
+        permissions = {
+            "can_view_salary": (
+                is_hr or user == employee.user
+            ),
+            "can_edit": is_hr,
+            "can_deactivate": is_hr,
+        }
+
+        context["permissions"] = permissions
+        return context

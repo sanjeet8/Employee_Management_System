@@ -72,7 +72,11 @@ Employee List
         {% for employee in employees %}
         <tr>
 
-            <td>{{ employee.user.employee_id }}</td>
+            <td>
+                <a href="{% url 'employees:employee-detail' employee.pk %}">
+                    {{ employee.user.employee_id }}
+                </a>
+            </td>
 
             <td>{{ employee.user.username }}</td>
 
