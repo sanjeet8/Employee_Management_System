@@ -129,11 +129,12 @@ Employee List
 {% if is_paginated %}
 
 <div>
+    <a href="?{{ query_params }}&page={{ page_obj.next_page_number }}"></a>
 
     {% if page_obj.has_previous %}
-        <a href="?page=1">First</a>
+        <a href="?{{ query_params }}&page=1">First</a>
 
-        <a href="?page={{ page_obj.previous_page_number }}">
+        <a href="?{{ query_params }}&page={{ page_obj.previous_page_number }}">
             Previous
         </a>
     {% endif %}
@@ -141,11 +142,11 @@ Employee List
     Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
 
     {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">
+        <a href="?{{ query_params }}&page={{ page_obj.next_page_number }}">
             Next
         </a>
 
-        <a href="?page={{ page_obj.paginator.num_pages }}">
+        <a href="?{{ query_params }}&page={{ page_obj.paginator.num_pages }}">
             Last
         </a>
     {% endif %}

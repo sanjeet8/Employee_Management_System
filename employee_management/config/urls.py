@@ -20,7 +20,7 @@ from django.urls import path, include
 from apps.accounts.views import DashboardView
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path("accounts/", include("apps.accounts.urls")),
     path("", DashboardView.as_view(), name="dashboard",),
     path("employees/", include("apps.employees.urls")),

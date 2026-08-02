@@ -20,7 +20,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         "is_active",
     )
 
-    def save_form(self, request, obj, form, change):
+    def save_model(self, request, obj, form, change):
         if change:
             return super().save_model(
                 request,

@@ -11,10 +11,25 @@
 
 <body>
 
-<h1>Employee Management System</h1>
+<h1>🏢 Employee Management System</h1>
 
 <hr>
+{% if user.is_authenticated %}
 
+<p>
+    Welcome,
+    <strong>{{ user.get_full_name|default:user.username }}</strong>
+</p>
+
+<form method="post" action="{% url 'accounts:logout' %}">
+    {% csrf_token %}
+    <button type="submit">
+        Logout
+    </button>
+</form>
+
+{% endif %}
+<hr>
 {% if messages %}
     {% for message in messages %}
         <p>{{ message }}</p>

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Create Employee</h2>
+
+<form method="post">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">
+        Create Employee
+    </button>
+
+</form>
+
+{% if user.is_superuser or user.groups.all.0.name == "HR" %}
+    <a href="{% url 'employees:employee-create' %}">
+        Add Employee
+    </a>
+{% endif %}
+
+{% endblock %}

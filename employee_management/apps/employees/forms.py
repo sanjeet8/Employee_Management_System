@@ -1,6 +1,7 @@
 from django import forms
 
 from apps.departments.models import Department
+from apps.accounts.constants import UserRole
 from .models import Employee, EmploymentType
 
 class EmployeeAdminForm(forms.ModelForm):
@@ -16,6 +17,10 @@ class EmployeeAdminForm(forms.ModelForm):
     last_name = forms.CharField(max_length=150)
 
     email = forms.EmailField()
+
+    role = forms.ChoiceField(
+        choices = UserRole.choices
+    )
 
     class Meta:
         model = Employee

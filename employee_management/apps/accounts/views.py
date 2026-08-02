@@ -12,7 +12,8 @@ class UserLoginView(LoginView):
     redirect_authenticated_user = True
 
 class UserLogoutView(LogoutView):
-    template_name = "accounts/login.html"
+    # saved in setting or base.py LOGOUT_REDIRECT_URL = "/accounts/login/"
+    pass
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = "accounts/dashboard.html"
