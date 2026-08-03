@@ -1,13 +1,13 @@
 from django.contrib import admin
 
 from .models import Employee
-from .forms import EmployeeAdminForm
+from .forms import EmployeeCreateForm
 from .services import EmployeeService
 
 # Register your models here.
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
-    form = EmployeeAdminForm
+    form = EmployeeCreateForm
 
     list_display = (
         "id",

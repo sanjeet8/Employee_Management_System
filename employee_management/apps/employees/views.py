@@ -2,13 +2,16 @@ from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, FormView
 from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.views.generic import DetailView
+
 from .models import Employee
 from .services import EmployeeService
 from apps.departments.models import Department
 from apps.accounts.constants import UserRole
-from .forms import EmployeeAdminForm
+from .forms import EmployeeCreateForm, EmployeeUpdateForm
 from apps.accounts.mixins import HRRequiredMixin
-from django.views.generic import DetailView
 
 # Create your views here.
 class EmployeeListView(LoginRequiredMixin, ListView):
@@ -39,12 +42,12 @@ class EmployeeListView(LoginRequiredMixin, ListView):
     
 class EmployeeCreateView(LoginRequiredMixin, HRRequiredMixin, FormView):
     template_name = "employees/create.html"
-    form_class = EmployeeAdminForm
+    form_class = EmployeeCreateForm
     success_url = reverse_lazy("employees:employees")
 
     def form_valid(self, form):
         EmployeeService.create_employee(
-            **form.cleaned_data
+            validated_data=form.cleaned_data
         )
         return super().form_valid(form)
     
@@ -79,3 +82,33 @@ class EmployeeDetailView(LoginRequiredMixin, DetailView):
 
         context["permissions"] = permissions
         return context
+    
+class EmployeeUpdateView(HRRequiredMixin, FormView):
+    template_name = "employees/update.html"
+    form_class = EmployeeUpdateForm
+
+    def dispatch(self, request, *args, **kwargs):
+        self.employee = get_object_or_404(
+            Employee.objects.select_related("user"),
+            pk=self.kwargs["pk"],
+        )
+
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["instance"] = self.employee
+        return kwargs
+    
+    def form_valid(self, form):
+        EmployeeService.update_employee(
+            employee=self.employee,
+            validated_data=form.cleaned_data,
+        )
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy(
+            "employees:employee-detail",
+            kwargs={"pk": self.employee.pk},
+        )

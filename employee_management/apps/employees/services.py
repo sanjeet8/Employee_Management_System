@@ -8,22 +8,33 @@ from django.contrib.auth.models import Group
 class EmployeeService:
 
     @staticmethod
+    def _assign_group(user, role):
+        user.groups.clear()
+        group, _ = Group.objects.get_or_create(name=role)
+        user.groups.add(group)
+
+    @staticmethod
+    def _extract_user_data(validated_data):
+        return {
+            "first_name": validated_data.pop("first_name"),
+            "last_name": validated_data.pop("last_name"),
+            "email": validated_data.pop("email"),
+            "role": validated_data.pop("role"),
+        }
+
+
+    @staticmethod
     @transaction.atomic
-    def create_employee(
-        *,
-        username,
-        password,
-        first_name,
-        last_name,
-        email,
-        role,
-        department,
-        joining_date,
-        employment_type,
-        salary,
-        is_active,
-        manager=None,
-    ):
+    def create_employee(*, validated_data):
+        username = validated_data.pop("username")
+        password = validated_data.pop("password")
+
+        # Extract user data
+        role = validated_data.pop("role")
+        first_name = validated_data.pop("first_name")
+        last_name = validated_data.pop("last_name")
+        email = validated_data.pop("email")
+
         user = User.objects.create_user(
             username=username,
             password=password,
@@ -32,21 +43,42 @@ class EmployeeService:
             email=email,
             role=role,
         )
-        group, _ = Group.objects.get_or_create(name=role)
-        user.groups.add(group)
+        EmployeeService._assign_group(user, role)
 
         employee = Employee.objects.create(
             user=user,
-            department=department,
-            joining_date=joining_date,
-            employment_type=employment_type,
-            salary=salary,
-            manager=manager,
+            **validated_data
         )
 
         return employee
     
-    
+    @staticmethod
+    @transaction.atomic
+    def update_employee(*, employee: Employee, validated_data):
+        user = employee.user
+
+        # Extract user data
+        role = validated_data.pop("role")
+        first_name = validated_data.pop("first_name")
+        last_name = validated_data.pop("last_name")
+        email = validated_data.pop("email")
+
+        # Update User
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.role = role
+        user.save()
+
+        # Update Employee
+        for field, value in validated_data.items():
+            setattr(employee, field, value)
+        employee.save()
+
+        # Update the Group
+        EmployeeService._assign_group(user, role)
+
+
     @staticmethod
     def get_visible_employees(user, search="", department=""):
         queryset = (Employee.objects.select_related(

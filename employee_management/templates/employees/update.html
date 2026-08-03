@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Update Employee
+{% endblock %}
+
+{% block content %}
+
+<h1>Update Employee</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {% include "employees/_form.html" with button_text="Update Employee" %}
+</form>
+
+<p>
+    <a href="{% url 'employees:employees' %}">
+        Back to Employee List
+    </a>
+</p>
+
+{% endblock %}
