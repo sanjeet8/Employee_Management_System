@@ -73,9 +73,7 @@ Employee List
         <tr>
 
             <td>
-                <a href="{% url 'employees:employee-detail' employee.pk %}">
-                    {{ employee.user.employee_id }}
-                </a>
+                {{ employee.user.employee_id }}
             </td>
 
             <td>{{ employee.user.username }}</td>
@@ -105,9 +103,9 @@ Employee List
             </td>
 
             <td>
-                View |
-                Edit |
-                Delete
+                <a href="{% url 'employees:employee-detail' employee.pk %}">View</a> |
+                <a href="{% url 'employees:employee-update' employee.pk %}">Edit</a> |
+                <a href="{% url 'employees:employee-deactivate' employee.pk %}">Deactivate</a>
             </td>
 
         </tr>

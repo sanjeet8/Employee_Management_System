@@ -78,6 +78,25 @@ class EmployeeService:
         # Update the Group
         EmployeeService._assign_group(user, role)
 
+    @staticmethod
+    @transaction.atomic
+    def deactivate_employee(*, employee: Employee):
+        # Deactivate employee
+        employee.is_active = False
+        employee.save()
+
+        # Disable login
+        employee.user.is_active = False
+        employee.user.save()
+
+        # Remove as manager from team members
+        Employee.objects.filter(
+            manager = employee
+        ).update(manager=None)
+
+        return employee
+        
+
 
     @staticmethod
     def get_visible_employees(user, search="", department=""):
