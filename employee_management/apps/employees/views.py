@@ -42,7 +42,7 @@ class EmployeeListView(LoginRequiredMixin, ListView):
 
         return context
     
-class EmployeeCreateView(LoginRequiredMixin, HRRequiredMixin, FormView):
+class EmployeeCreateView(HRRequiredMixin, FormView):
     template_name = "employees/create.html"
     form_class = EmployeeCreateForm
     success_url = reverse_lazy("employees:employees")
