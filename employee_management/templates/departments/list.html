@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}
+Departments
+{% endblock %}
+
+{% block content %}
+
+<h2>Departments</h2>
+
+<form method="get">
+    <input
+        type="text"
+        name="search"
+        placeholder="Search department..."
+        value="{{ request.GET.search }}"
+    >
+
+    <button type="submit">
+        Search
+    </button>
+</form>
+
+<br>
+
+<table>
+    <thead>
+        <tr>
+            <th>Department ID</th>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Manager</th>
+            <th>Employees</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for department in departments %}
+            <tr>
+                <td>
+                    {{ department.id }}
+                </td>
+
+                <td>
+                    {{ department.code }}
+                </td>
+
+                <td>
+                    {{ department.name }}
+                </td>
+
+                <td>
+                    {% if department.manager %}
+                        {{ department.manager.user.get_full_name }}
+                    {% else %}
+                        Not Assigned
+                    {% endif %}
+                </td>
+
+                <td>
+                    {{ department.employee_count }}
+                </td>
+
+                <td>
+                    {% if department.is_active %}
+                        Active
+                    {% else %}
+                        Inactive
+                    {% endif %}
+                </td>
+            </tr>
+
+        {% empty %}
+            <tr>
+                <td colspan="6">
+                    No departments found.
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if is_paginated %}
+
+<div>
+    {% if page_obj.has_previous %}
+        <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+            First
+        </a>
+
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+            Previous
+        </a>
+    {% endif %}
+
+    <span>
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+            Next
+        </a>
+
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+            Last
+        </a>
+    {% endif %}
+</div>
+
+{% endif %}
+
+{% endblock %}

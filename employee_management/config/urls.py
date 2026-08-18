@@ -24,4 +24,5 @@ urlpatterns = [
     path("accounts/", include("apps.accounts.urls")),
     path("", DashboardView.as_view(), name="dashboard",),
     path("employees/", include("apps.employees.urls")),
+    path("departments/", include("apps.departments.urls")),
 ]
