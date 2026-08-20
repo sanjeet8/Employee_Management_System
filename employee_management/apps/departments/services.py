@@ -86,3 +86,24 @@ class DepartmentService:
         return queryset.filter(
             pk=department_id
         ).first()
+    
+    @staticmethod
+    @transaction.atomic
+    def update_department(*, department, validated_data):
+        manager = validated_data.pop("manager", None)
+        for field, value in validated_data.items():
+            setattr(department, field, value)
+        
+        department.save()
+
+        if manager != department.manager:
+            if manager is None:
+                department.manager = None
+                department.save(update_fields=["manager", "updated_at"])
+            else:
+                DepartmentService.assign_manager(
+                    department=department,
+                    manager=manager,
+                )
+
+        return department

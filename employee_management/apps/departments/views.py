@@ -1,11 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView, FormView
+from django.views.generic import ListView, DetailView, FormView, UpdateView
 from django.http import Http404
 from django.shortcuts import redirect
 
 from .models import Department
 from .services import DepartmentService
-from .forms import DepartmentForm
+from .forms import DepartmentForm, DepartmentUpdateForm
 from apps.accounts.mixins import HRRequiredMixin
 
 class DepartmentListView(LoginRequiredMixin, ListView):
@@ -51,4 +51,20 @@ class DepartmentCreateView(HRRequiredMixin, FormView):
 
         return redirect(
             "departments:department-list"
+        )
+    
+class DepartmentUpdateView(HRRequiredMixin, UpdateView):
+    model = Department
+    template_name = "departments/update.html"
+    form_class = DepartmentUpdateForm
+
+    def form_valid(self, form):
+        DepartmentService.update_department(
+            department=self.object,
+            validated_data=form.cleaned_data.copy(),
+        )
+
+        return redirect(
+            "departments:department-detail",
+            pk=self.object.pk,
         )
