@@ -67,3 +67,22 @@ class DepartmentService:
 
         return queryset
     
+    @staticmethod
+    def get_visible_department(*, user, department_id):
+        queryset = Department.objects.select_related(
+            "manager",
+            "manager__user",
+        ).prefetch_related("employees__user",)
+
+        if user.is_superuser:
+            pass
+        elif user.groups.filter(name="HR").exists():
+            pass
+        else:
+            queryset = queryset.filter(
+                pk=user.employee_profile.department_id
+            )
+
+        return queryset.filter(
+            pk=department_id
+        ).first()

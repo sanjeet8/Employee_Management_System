@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create Department
+{% endblock %}
+
+{% block content %}
+
+<h2>Create Department</h2>
+
+<form method="post">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">
+        Create Department
+    </button>
+
+    <a href="{% url 'departments:department-list' %}">
+        Cancel
+    </a>
+
+</form>
+
+{% endblock %}

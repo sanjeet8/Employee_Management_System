@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ department.name }}
+{% endblock %}
+
+{% block content %}
+
+<h2>{{ department.name }}</h2>
+
+<p>
+    <strong>Code:</strong>
+    {{ department.code }}
+</p>
+
+<p>
+    <strong>Description:</strong>
+    {{ department.description|default:"No description" }}
+</p>
+
+<p>
+    <strong>Manager:</strong>
+
+    {% if department.manager %}
+        {{ department.manager.user.get_full_name }}
+    {% else %}
+        Not Assigned
+    {% endif %}
+</p>
+
+<p>
+    <strong>Status:</strong>
+
+    {% if department.is_active %}
+        Active
+    {% else %}
+        Inactive
+    {% endif %}
+</p>
+
+<h3>Employees</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>Employee ID</th>
+            <th>Name</th>
+            <th>Employment Type</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for employee in department.employees.all %}
+            <tr>
+                <td>
+                    {{ employee.user.employee_id }}
+                </td>
+
+                <td>
+                    {{ employee.user.get_full_name }}
+                </td>
+
+                <td>
+                    {{ employee.get_employment_type_display }}
+                </td>
+
+                <td>
+                    {% if employee.is_active %}
+                        Active
+                    {% else %}
+                        Inactive
+                    {% endif %}
+                </td>
+            </tr>
+
+        {% empty %}
+            <tr>
+                <td colspan="4">
+                    No employees found.
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<br>
+
+<a href="{% url 'departments:department-list' %}">
+    Back to Departments
+</a>
+
+{% endblock %}

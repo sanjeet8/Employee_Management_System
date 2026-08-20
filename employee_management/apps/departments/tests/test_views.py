@@ -263,3 +263,102 @@ class DepartmentViewTest(TestCase):
             departments.count(),
             0,
         )
+
+    # HR can create
+    def test_hr_can_create_department(self):
+        hr = self.create_user(
+            "hr",
+            UserRole.HR,
+        )
+
+        self.client.login(
+            username="hr",
+            password="password123",
+        )
+
+        response = self.client.post(
+            reverse("departments:department-create"),
+            {
+                "name": "Finance",
+                "code": "FIN",
+                "description": "Finance Department",
+                "is_active": True,
+            }
+        )
+
+        self.assertEqual(
+            response.status_code,
+            302,
+        )
+
+        self.assertTrue(
+            Department.objects.filter(
+                name="Finance",
+            ).exists()
+        )
+
+    # Employee cannot create
+    def test_employee_cannot_create_department(self):
+        employee = EmployeeService.create_employee(
+            validated_data={
+                "username": "rahul",
+                "password": "password123",
+                "first_name": "Rahul",
+                "last_name": "Test",
+                "email": "rahul@example.com",
+                "role": UserRole.EMPLOYEE,
+                "department": self.engineering,
+                "manager": None,
+                "joining_date": "2026-01-01",
+                "employment_type": EmploymentType.FULL_TIME,
+                "salary": 50000,
+                "is_active": True,
+            }
+        )
+
+        self.client.login(
+            username="rahul",
+            password="password123",
+        )
+
+        response = self.client.get(
+            reverse("departments:department-create"),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )
+
+    # Manager cannot create
+    def test_manager_cannot_create_department(self):
+        manager = EmployeeService.create_employee(
+            validated_data={
+                "username": "pankaj",
+                "password": "password123",
+                "first_name": "Pankaj",
+                "last_name": "Test",
+                "email": "pankaj@example.com",
+                "role": UserRole.MANAGER,
+                "department": self.engineering,
+                "manager": None,
+                "joining_date": "2026-01-01",
+                "employment_type": EmploymentType.FULL_TIME,
+                "salary": 70000,
+                "is_active": True,
+            }
+        )
+
+        self.client.login(
+            username="pankaj",
+            password="password123",
+        )
+
+        response = self.client.get(
+            reverse("departments:department-create"),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )
