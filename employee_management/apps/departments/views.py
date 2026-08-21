@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView, FormView, UpdateView
+from django.views.generic import ListView, DetailView, FormView, UpdateView, View
 from django.http import Http404
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 
 from .models import Department
 from .services import DepartmentService
@@ -67,4 +67,20 @@ class DepartmentUpdateView(HRRequiredMixin, UpdateView):
         return redirect(
             "departments:department-detail",
             pk=self.object.pk,
+        )
+    
+class DepartmentDeactivateView(HRRequiredMixin, View):
+    def post(self, request, pk):
+        department = get_object_or_404(
+            Department,
+            pk=pk
+        )
+
+        DepartmentService.deactivate_department(
+            department=department,
+        )
+
+        return redirect(
+            "departments:department-detail",
+            pk=department.pk,
         )

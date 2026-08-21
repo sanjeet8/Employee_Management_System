@@ -107,3 +107,19 @@ class DepartmentService:
                 )
 
         return department
+    
+    @staticmethod
+    @transaction.atomic
+    def deactivate_department(*, department: Department):
+        department.is_active = False
+        department.manager = None
+
+        department.save(
+            update_fields=[
+                "is_active",
+                "manager",
+                "updated_at",
+            ]
+        )
+
+        return department
